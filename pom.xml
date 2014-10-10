@@ -145,6 +145,9 @@
 					<provides>
 						<provide>${project.artifactId}</provide>
 					</provides>
+					<requires>
+						<require>seadas</require>
+					</requires>
 					<needarch>x86_64</needarch>
 				</configuration>
 			</plugin>
