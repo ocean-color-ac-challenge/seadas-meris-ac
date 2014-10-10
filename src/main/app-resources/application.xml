@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="CATARSI_lai">
+  <jobTemplates>
+    <jobTemplate id="seadas">
+      <streamingExecutable>/application/seadas/run.sh</streamingExecutable>
+      <defaultParameters>
+        <parameter id="starttime" title="Start Time" abstract="Start Time to query the Catalogue" scope="runtime" type="opensearch" target="time:start" />
+        <parameter id="enddate" title="End time" abstract="End time to query the Catalogue" scope="runtime" type="opensearch" target="time:end" />
+        <parameter id="bbox" title="Bounding Box" abstract="Bounding Box to query the Catalogue" scope="runtime" type="opensearch" target="geo:box" />
+      </defaultParameters>
+      <defaultJobconf />
+    </jobTemplate>
+  </jobTemplates>
+  <workflow id="wf_seadas" title="seadas" abstract="Oceancolor Seadas">
+    <workflowVersion>1.0</workflowVersion>
+    <node id="node_seadas">
+      <job id="seadas" />
+      <sources>
+        <source id="data" refid="cas:series">http://catalogue.terradue.int/catalogue/search/MER_FRS_1P/rdf</source>
+      </sources>
+      <parameters>
+      	<parameter id="starttime">2009-07-28T09:55:45.000Z</parameter>
+      	<parameter id="enddate">2009-07-28T10:04:15.000Z</parameter>
+      	<parameter id="bbox">-180,90,180,-90</parameter>
+      </parameters>
+    </node>
+  </workflow>
+</application>
