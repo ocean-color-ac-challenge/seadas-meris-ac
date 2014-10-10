@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="us-ascii"?>
-<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="CATARSI_lai">
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="seadas">
   <jobTemplates>
     <jobTemplate id="seadas">
       <streamingExecutable>/application/seadas/run.sh</streamingExecutable>
@@ -11,7 +11,7 @@
       <defaultJobconf />
     </jobTemplate>
   </jobTemplates>
-  <workflow id="wf_seadas" title="seadas" abstract="Oceancolor Seadas">
+  <workflow id="wf_seadas" title="seadas" abstract="Ocean color atmospheric correction with Seadas">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_seadas">
       <job id="seadas" />
