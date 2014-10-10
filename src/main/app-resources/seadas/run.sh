@@ -42,23 +42,26 @@ function cleanExit ()
 
 trap cleanExit EXIT
 
-#export DISPLAY=:99
 ciop-log "DEBUG" "Running on display $DISPLAY"
+
+myInput="$TMPDIR/input"
+myOutput="$TMPDIR/output"
+mkdir -p $myInput $myOutput
 
 while read input
 do
 	#getting the input
 	ciop-log "INFO" "Working with file $input"
-	file=`ciop-copy -o . $input`
+	file=`ciop-copy -o $myInput $input`
 	ciop-log "DEBUG" "ciop-copy output is $file"
 
 	#preparing the processor run
 	basefile=`basename $file`
 	ciop-log "INFO" "Starting seadas processor"
-	#/usr/local/seadas6.4/
+	/usr/local/seadas6.4/run/bin/linux_64/l2gen ifile=$file ofile=$myOutput/`echo "$basefile" | sed 's#\.N1$#.L2#g'`
 
 	#publishing the output
-	ciop-log "INFO" "Publishing output [`echo $file | sed 's#\.zip##g' | sed 's#input#output#g'`]"
-	ciop-publish -m $outputDir/`echo $file | sed 's#\.zip##g' | sed 's#input#output#g'`.tgz
+	ciop-log "INFO" "Publishing output"
+	ciop-publish -m $myOutput/*.L2
 
 done
