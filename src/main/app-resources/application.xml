@@ -8,15 +8,17 @@
         <parameter id="enddate" title="End time" abstract="End time to query the Catalogue" scope="runtime" type="opensearch" target="time:end" />
         <parameter id="bbox" title="Bounding Box" abstract="Bounding Box to query the Catalogue" scope="runtime" type="opensearch" target="geo:box" />
       </defaultParameters>
-      <defaultJobconf />
+      <defaultJobconf>
+        <property id="mapred.task.timeout">9900000000000</property>
+      </defaultJobconf>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="wf_seadas" title="seadas" abstract="Ocean color atmospheric correction with Seadas">
+  <workflow id="wf_seadas" title="Seadas Ocean Color" abstract="Ocean color atmospheric correction using Seadas">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_seadas">
       <job id="seadas" />
       <sources>
-        <source id="data" refid="cas:series">http://catalogue.terradue.int/catalogue/search/MER_FRS_1P/rdf</source>
+        <source id="data" refid="cas:series">http://catalogue.terradue.int/catalogue/search/MER_FRS_1P/description</source>
       </sources>
       <parameters>
       	<parameter id="starttime">2009-07-28T09:55:45.000Z</parameter>
