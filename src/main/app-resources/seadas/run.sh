@@ -44,6 +44,9 @@ trap cleanExit EXIT
 
 ciop-log "DEBUG" "Running on display $DISPLAY"
 
+export PATH_TO_SEADAS=/usr/local/seadas6.4/ #seadas installation
+source $PATH_TO_SEADAS/config/seadas.env #seadas installation
+
 myInput="$TMPDIR/input"
 myOutput="$TMPDIR/output"
 mkdir -p $myInput $myOutput
@@ -55,13 +58,21 @@ do
 	file=`ciop-copy -o $myInput $input`
 	ciop-log "DEBUG" "ciop-copy output is $file"
 
+	cp $file /tmp/
+
 	#preparing the processor run
 	basefile=`basename $file`
+
+	n1input="$file"
+	l2output="$myOutput/`echo "$basefile" | sed 's#\.N1$#.L2#g'`"
+
 	ciop-log "INFO" "Starting seadas processor"
-	/usr/local/seadas6.4/run/bin/linux_64/l2gen ifile=$file ofile=$myOutput/`echo "$basefile" | sed 's#\.N1$#.L2#g'`
+	/usr/local/seadas6.4/run/bin/linux_64/l2gen ifile=$n1input ofile=$l2output
 
 	#publishing the output
 	ciop-log "INFO" "Publishing output"
 	ciop-publish -m $myOutput/*.L2
 
+	rm -rf $TMPDIR/input/*
+	rm -rf $TMPDIR/output/*
 done
