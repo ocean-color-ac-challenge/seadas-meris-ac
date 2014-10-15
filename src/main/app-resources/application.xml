@@ -25,6 +25,13 @@
       	<parameter id="starttime">2009-07-28T09:55:45.000Z</parameter>
       	<parameter id="enddate">2009-07-28T10:04:15.000Z</parameter>
       	<parameter id="bbox">-180,90,180,-90</parameter>
+      	<parameter id="par"><![CDATA[
+# SUITE
+suite=OC
+
+# ANCILLARY INPUTS  Default = climatology (select 'Get Ancillary' to download ancillary files)
+]]
+      	</parameter>
       </parameters>
     </node>
   </workflow>
