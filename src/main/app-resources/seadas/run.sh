@@ -43,7 +43,7 @@ mkdir -p $myInput $myOutput
 while read input
 do
 	#getting the input
-	ciop-log "INFO" "Working with file $input"
+	ciop-log "INFO" "Working with MERIS product $input"
 	
 	n1input=`ciop-copy -o $myInput $input`
 	[ $? != 0 ] && exit $ERR_NOINPUT
@@ -52,24 +52,26 @@ do
 
 	#preparing the processor run
 	l2output="$myOutput/`basename $n1input | sed 's#\.N1$#.L2#g'`"
+	seadaspar="$myOutput/`basename $n1input | sed 's#\.N1$#.par#g'`"
 
-cat >> $myInput/seadas.par << EOF
+cat >> $seadaspar << EOF
 # PRIMARY INPUT OUTPUT FIELDS
 ifile=$n1input
 ofile=$l2output
 
-$pars
+$par
 EOF
 
 	ciop-log "INFO" "Starting seaDAS processor"
-	/usr/local/seadas6.4/run/bin/linux_64/l2gen par="$myInput/seadas.par"
+	/usr/local/seadas6.4/run/bin/linux_64/l2gen par="$seadaspar"
 
 	[ $? != 0 ] && exit $ERR_SEADAS
 
 	#publishing the output
 	ciop-log "INFO" "Publishing `basename $l2output`"
 	ciop-publish -m $l2output
-
+	ciop-publish -m $seadaspar
+	
 	rm -rf $TMPDIR/input/*
 	rm -rf $TMPDIR/output/*
 done
