@@ -7,7 +7,8 @@ export LC_ALL="en_US.UTF-8"
 
 # define the exit codes
 SUCCESS=0
-ERR_NOINPUT=1
+ERR_NOINPUT=5
+ERR_SEADAS=10
 
 # add a trap to exit gracefully
 function cleanExit ()
@@ -17,7 +18,7 @@ function cleanExit ()
 	case "$retval" in
 		$SUCCESS) 	msg="Processing successfully concluded";;
 		$ERR_NOINPUT)	msg="Input not retrieved to local node";;
-		$ERR_SEADAS)	msg="SEADAS l2gen returned an error";;
+		$ERR_SEADAS)	msg="seaDAS l2gen returned an error";;
 		*)		msg="Unknown error";;
 	esac
 
@@ -27,6 +28,8 @@ function cleanExit ()
 }
 
 trap cleanExit EXIT
+
+pars=`ciop-getparam("pars")`
 
 ciop-log "DEBUG" "Running on display $DISPLAY"
 
@@ -41,28 +44,31 @@ while read input
 do
 	#getting the input
 	ciop-log "INFO" "Working with file $input"
-	file=`ciop-copy -o $myInput $input`
 	
+	n1input=`ciop-copy -o $myInput $input`
 	[ $? != 0 ] && exit $ERR_NOINPUT
 	
-	ciop-log "DEBUG" "ciop-copy output is $file"
-
-	cp $file /tmp/
+	ciop-log "DEBUG" "ciop-copy output is $n1input"
 
 	#preparing the processor run
-	basefile=`basename $file`
+	l2output="$myOutput/`basename $n1input | sed 's#\.N1$#.L2#g'`"
 
-	n1input="$file"
-	l2output="$myOutput/`echo "$basefile" | sed 's#\.N1$#.L2#g'`"
+cat >> $myInput/seadas.par << EOF
+# PRIMARY INPUT OUTPUT FIELDS
+ifile=$n1input
+ofile=$l2output
 
-	ciop-log "INFO" "Starting seadas processor"
-	/usr/local/seadas6.4/run/bin/linux_64/l2gen ifile=$n1input ofile=$l2output
+$pars
+EOF
+
+	ciop-log "INFO" "Starting seaDAS processor"
+	/usr/local/seadas6.4/run/bin/linux_64/l2gen par="$myInput/seadas.par"
 
 	[ $? != 0 ] && exit $ERR_SEADAS
 
 	#publishing the output
-	ciop-log "INFO" "Publishing output"
-	ciop-publish -m $myOutput/*.L2
+	ciop-log "INFO" "Publishing `basename $l2output`"
+	ciop-publish -m $l2output
 
 	rm -rf $TMPDIR/input/*
 	rm -rf $TMPDIR/output/*
