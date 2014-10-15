@@ -1,20 +1,5 @@
 #!/bin/bash
 
-# Project:		 ${project.name}
-# Author:		  $Author: fbrito $ (Terradue Srl)
-# Last update:	${doc.timestamp}:
-# Element:		 ${project.name}
-# Context:		 ${project.artifactId}
-# Version:		 ${project.version} (${implementation.build})
-# Description:	${project.description}
-#
-# This document is the property of Terradue and contains information directly
-# resulting from knowledge and experience of Terradue.
-# Any changes to this code is forbidden without written consent from Terradue Srl
-#
-# Contact: info@terradue.com
-# 2012-02-10 - NEST in jobConfig upgraded to version 4B-1.1
-
 # source the ciop functions (e.g. ciop-log)
 
 source ${ciop_job_include}
@@ -32,6 +17,7 @@ function cleanExit ()
 	case "$retval" in
 		$SUCCESS) 	msg="Processing successfully concluded";;
 		$ERR_NOINPUT)	msg="Input not retrieved to local node";;
+		$ERR_SEADAS)	msg="SEADAS l2gen returned an error";;
 		*)		msg="Unknown error";;
 	esac
 
@@ -56,6 +42,9 @@ do
 	#getting the input
 	ciop-log "INFO" "Working with file $input"
 	file=`ciop-copy -o $myInput $input`
+	
+	[ $? != 0 ] && exit $ERR_NOINPUT
+	
 	ciop-log "DEBUG" "ciop-copy output is $file"
 
 	cp $file /tmp/
@@ -68,6 +57,8 @@ do
 
 	ciop-log "INFO" "Starting seadas processor"
 	/usr/local/seadas6.4/run/bin/linux_64/l2gen ifile=$n1input ofile=$l2output
+
+	[ $? != 0 ] && exit $ERR_SEADAS
 
 	#publishing the output
 	ciop-log "INFO" "Publishing output"
