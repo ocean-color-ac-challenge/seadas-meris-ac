@@ -33,8 +33,10 @@ par=`ciop-getparam("par")`
 
 ciop-log "DEBUG" "Running on display $DISPLAY"
 
-export PATH_TO_SEADAS=/usr/local/seadas6.4/ #seadas installation
-source $PATH_TO_SEADAS/config/seadas.env #seadas installation
+export PATH_TO_SEADAS=/usr/local/seadas-7.1/
+source $PATH_TO_SEADAS/ocssw/OCSSW_bash.env
+export OCDATAROOT=$PATH_TO_SEADAS/ocssw/run/data/
+export DISPLAY=:99
 
 myInput="$TMPDIR/input"
 myOutput="$TMPDIR/output"
@@ -63,7 +65,7 @@ $par
 EOF
 
 	ciop-log "INFO" "Starting seaDAS processor"
-	/usr/local/seadas6.4/run/bin/linux_64/l2gen par="$seadaspar"
+	$PATH_TO_SEADAS/ocssw/run/bin/l2gen par="$seadaspar"
 
 	[ $? != 0 ] && exit $ERR_SEADAS
 
