@@ -30,7 +30,7 @@
 suite=OC
 
 # ANCILLARY INPUTS  Default = climatology (select 'Get Ancillary' to download ancillary files)
-]]
+]]>
       	</parameter>
       </parameters>
     </node>
