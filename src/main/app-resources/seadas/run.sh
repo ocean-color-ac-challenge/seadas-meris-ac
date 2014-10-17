@@ -29,7 +29,7 @@ function cleanExit ()
 
 trap cleanExit EXIT
 
-par=`ciop-getparam("par")`
+par=`ciop-getparam "par"`
 
 ciop-log "DEBUG" "Running on display $DISPLAY"
 
