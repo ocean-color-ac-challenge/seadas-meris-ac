@@ -63,20 +63,22 @@ ofile=$l2output
 
 $par
 EOF
-
+set -x
 	ciop-log "INFO" "Starting seaDAS processor"
 	$PATH_TO_SEADAS/ocssw/run/bin/l2gen par="$seadaspar"
 
 	[ $? != 0 ] && exit $ERR_SEADAS
+
+	ciop-log "INFO" "Conversion to BEAM-DIMAP format"
+	$PATH_TO_SEADAS/bin/pconvert.sh --outdir $outputDir $l2output 
 	
 	ciop-log "INFO" "Compressing results"
-	find $outputDir -type f -exec gzip \{\} \;
-
-	#publishing the output
-	ciop-log "INFO" "Publishing `basename $l2output`"
+	tar -C $outputDir -cvzf $outputDir/`basename $l2output`.tgz `basename $l2output`.dim `basename $l2output`.data
 	
-	ciop-publish -m $l2output.gz
-	ciop-publish -m $seadaspar.gz
+	#publishing the output
+	ciop-log "INFO" "Publishing `basename $l2output`.tgz"
+	
+	ciop-publish -m $outputDir/`basename $l2output`.tgz
 	
 	rm -rf $myInput/*
 	rm -rf $myOutput/*
