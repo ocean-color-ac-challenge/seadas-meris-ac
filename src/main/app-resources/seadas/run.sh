@@ -68,12 +68,16 @@ EOF
 	$PATH_TO_SEADAS/ocssw/run/bin/l2gen par="$seadaspar"
 
 	[ $? != 0 ] && exit $ERR_SEADAS
+	
+	ciop-log "INFO" "Compressing results"
+	find $outputDir -type f -exec gzip \{\} \;
 
 	#publishing the output
 	ciop-log "INFO" "Publishing `basename $l2output`"
-	ciop-publish -m $l2output
-	ciop-publish -m $seadaspar
 	
-	rm -rf $TMPDIR/input/*
-	rm -rf $TMPDIR/output/*
+	ciop-publish -m $l2output.gz
+	ciop-publish -m $seadaspar.gz
+	
+	rm -rf $myInput/*
+	rm -rf $myOutput/*
 done
