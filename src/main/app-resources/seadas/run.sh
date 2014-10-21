@@ -9,6 +9,8 @@ export LC_ALL="en_US.UTF-8"
 SUCCESS=0
 ERR_NOINPUT=5
 ERR_SEADAS=10
+ERR_PCONVERT=20
+ERR_TAR=30
 
 # add a trap to exit gracefully
 function cleanExit ()
@@ -46,12 +48,10 @@ while read input
 do
 	#getting the input
 	ciop-log "INFO" "Working with MERIS product $input"
-	
+
 	n1input=`ciop-copy -o $myInput $input`
 	[ $? != 0 ] && exit $ERR_NOINPUT
 	
-	ciop-log "DEBUG" "ciop-copy output is $n1input"
-
 	#preparing the processor run
 	l2output="$myOutput/`basename $n1input | sed 's#\.N1$#.L2#g'`"
 	seadaspar="$myOutput/`basename $n1input | sed 's#\.N1$#.par#g'`"
@@ -63,22 +63,24 @@ ofile=$l2output
 
 $par
 EOF
-set -x
+	
 	ciop-log "INFO" "Starting seaDAS processor"
 	$PATH_TO_SEADAS/ocssw/run/bin/l2gen par="$seadaspar"
-
 	[ $? != 0 ] && exit $ERR_SEADAS
 
 	ciop-log "INFO" "Conversion to BEAM-DIMAP format"
-	$PATH_TO_SEADAS/bin/pconvert.sh --outdir $outputDir $l2output 
-	
+	$PATH_TO_SEADAS/bin/pconvert.sh --outdir $myOutput $l2output 
+	[ $? != 0 ] && exit $ERR_PCONVERT
+
 	ciop-log "INFO" "Compressing results"
-	tar -C $outputDir -cvzf $outputDir/`basename $l2output`.tgz `basename $l2output`.dim `basename $l2output`.data
-	
+	tar -C $myOutput -cvzf $myOutput/`basename $l2output`.tgz \
+			`basename $l2output | sed 's#\.L2$#.dim#g'` \
+			 `basename $l2output | sed 's#\.L2$#.data#g'`
+	[ $? != 0 ] && exit $ERR_TAR	
+
 	#publishing the output
 	ciop-log "INFO" "Publishing `basename $l2output`.tgz"
-	
-	ciop-publish -m $outputDir/`basename $l2output`.tgz
+	ciop-publish -m $myOutput/`basename $l2output`.tgz
 	
 	rm -rf $myInput/*
 	rm -rf $myOutput/*
