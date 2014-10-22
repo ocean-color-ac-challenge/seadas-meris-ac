@@ -21,6 +21,8 @@ function cleanExit ()
 		$SUCCESS) 	msg="Processing successfully concluded";;
 		$ERR_NOINPUT)	msg="Input not retrieved to local node";;
 		$ERR_SEADAS)	msg="seaDAS l2gen returned an error";;
+		$ERR_PCONVERT)	msg="Conversion to BEAM-DIMAP failed";;
+		$ERR_TAR)	msg="Compression of BEAM-DIMAP failed";;
 		*)		msg="Unknown error";;
 	esac
 
