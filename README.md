@@ -89,7 +89,8 @@ To learn more and find information go to
 
 * Fabrice Brito
 * Fabio D'Andria
-
+* Samantha Lavender 
+ 
 ### License
 
 Copyright 2014 Terradue Srl
