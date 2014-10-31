@@ -11,6 +11,7 @@ ERR_NOINPUT=5
 ERR_SEADAS=10
 ERR_PCONVERT=20
 ERR_TAR=30
+ERR_JAVAVERSION=15
 
 # add a trap to exit gracefully
 function cleanExit ()
@@ -23,6 +24,7 @@ function cleanExit ()
 		$ERR_SEADAS)	msg="seaDAS l2gen returned an error";;
 		$ERR_PCONVERT)	msg="Conversion to BEAM-DIMAP failed";;
 		$ERR_TAR)	msg="Compression of BEAM-DIMAP failed";;
+		$ERR_JAVAVERSION) msg="The version of the JVM must be at least 1.7";;
 		*)		msg="Unknown error";;
 	esac
 
@@ -33,18 +35,20 @@ function cleanExit ()
 
 trap cleanExit EXIT
 
-par=`ciop-getparam "par"`
-
-ciop-log "DEBUG" "Running on display $DISPLAY"
-
 export PATH_TO_SEADAS=/usr/local/seadas-7.1/
 source $PATH_TO_SEADAS/ocssw/OCSSW_bash.env
 export OCDATAROOT=$PATH_TO_SEADAS/ocssw/run/data/
 export DISPLAY=:99
 
+ciop-log "INFO" "Checking Java version"
+$PATH_TO_SEADAS/bin/detect_java.sh
+[ "$?" == "0" ] || exit $ERR_JAVAVERSION
+
 myInput="$TMPDIR/input"
 myOutput="$TMPDIR/output"
 mkdir -p $myInput $myOutput
+
+par=`ciop-getparam "par"`
 
 while read input
 do
